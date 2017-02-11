@@ -16,8 +16,8 @@
 #include "DList.hpp"
 
 
-OPT_FLAG        optFlag;
-
+OPT_FLAG optFlag;
+Debug *dbg;             // Warning: should be created before DList
 
 int main(int argc, char* argv[])
 {
@@ -42,13 +42,17 @@ int main(int argc, char* argv[])
 
     // using Debug class (DEFAULT_DEBUG_LEVEL), borrow 'opt'
     opt = (optFlag.debug ? DEBUG_LEVEL_INFO : DEBUG_LEVEL_DEBUG);
-    Debug dbg(opt);
+    dbg = new (std::nothrow) Debug(opt);
+    if (!dbg) {
+        cerr << "Unable to create Debug system!" << endl;
+        return -ENOMEM;
+    }
 
-    dbg << "Digits Per Node : " << digitsPerNode << endl;
+    *dbg << "Digits Per Node : " << digitsPerNode << endl;
 
     //get line input from file
     while (getline(ifs, line)){
-        dbg << "--- Parsing " << line << endl;
+        *dbg << "--- Parsing " << line << endl;
 
         string operation=" ";
         string num1=" ";
@@ -66,9 +70,9 @@ int main(int argc, char* argv[])
         num2.erase(remove(num2.begin(),num2.end(),'\r'));
         operation = line[operationIndex];
 
-        dbg << "  num1 = " << num1 << endl;
-        dbg << "  num2 = " << num2 << endl;
-        dbg << "  operation = " << operation << endl;
+        *dbg << "  num1 = " << num1 << endl;
+        *dbg << "  num2 = " << num2 << endl;
+        *dbg << "  operation = " << operation << endl;
 
         DList* listOne = new DList(num1,digitsPerNode);
         DList* listTwo = new DList(num2,digitsPerNode);
@@ -94,6 +98,8 @@ int main(int argc, char* argv[])
         
     }
     cout << endl;
-    
+
+    delete dbg;
+
     return 0;
 }

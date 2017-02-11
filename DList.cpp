@@ -11,6 +11,7 @@
 
 
 extern OPT_FLAG optFlag;
+extern Debug *dbg;
 
 
 bool DList::isEmpty()
