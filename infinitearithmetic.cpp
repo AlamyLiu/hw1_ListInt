@@ -44,6 +44,7 @@ int main(int argc, char* argv[])
     opt = (optFlag.debug ? DEBUG_LEVEL_INFO : DEBUG_LEVEL_DEBUG);
     Debug dbg(opt);
 
+    dbg << "Digits Per Node : " << digitsPerNode << endl;
 
     //get line input from file
     while (getline(ifs, line)){
@@ -64,6 +65,10 @@ int main(int argc, char* argv[])
         num2 = line.substr(operationIndex+1);
         num2.erase(remove(num2.begin(),num2.end(),'\r'));
         operation = line[operationIndex];
+
+        dbg << "  num1 = " << num1 << endl;
+        dbg << "  num2 = " << num2 << endl;
+        dbg << "  operation = " << operation << endl;
 
         DList* listOne = new DList(num1,digitsPerNode);
         DList* listTwo = new DList(num2,digitsPerNode);
