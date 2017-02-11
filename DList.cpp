@@ -6,6 +6,7 @@
 //  Copyright © 2017年 NientaiHo. All rights reserved.
 //
 
+#include <cmath>                        // abs()
 #include "DList.hpp"
 
 
