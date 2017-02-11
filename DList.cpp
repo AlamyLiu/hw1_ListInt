@@ -10,6 +10,7 @@
 #include "DList.hpp"
 
 
+extern OPT_FLAG optFlag;
 
 
 bool DList::isEmpty()

@@ -12,6 +12,7 @@
 #include <iostream>
 #include <string>
 #include <math.h>
+#include "DebugW.hpp"                   // Debug
 using namespace std;
 
 class DList

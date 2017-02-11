@@ -11,7 +11,13 @@
 #include <string>
 #include <algorithm>
 #include "ArgumentManager.h"
+#include <unistd.h>                     // getopt()
+#include "DebugW.hpp"                   // Debug
 #include "DList.hpp"
+
+
+OPT_FLAG        optFlag;
+
 
 int main(int argc, char* argv[])
 {
@@ -23,10 +29,26 @@ int main(int argc, char* argv[])
     int digitsPerNode = stoi(am.get("digitsPerNode"));
     ifstream ifs(filename.c_str());
     string line;
-    
+
+    // Retrieve other options (argv[2] and afterwards)
+    int opt;
+    while ( (opt = getopt(argc, argv, "d")) != -1) {
+        switch (opt) {
+        case 'd': optFlag.debug = true;         break;
+        case '?': /* Unknown option (ignore) */
+        default : /* Do nothing */              break;
+        } // End of switch(opt)
+    } // End of while(opt)
+
+    // using Debug class (DEFAULT_DEBUG_LEVEL), borrow 'opt'
+    opt = (optFlag.debug ? DEBUG_LEVEL_INFO : DEBUG_LEVEL_DEBUG);
+    Debug dbg(opt);
+
+
     //get line input from file
     while (getline(ifs, line)){
-        
+        dbg << "--- Parsing " << line << endl;
+
         string operation=" ";
         string num1=" ";
         string num2=" ";
