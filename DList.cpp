@@ -220,27 +220,9 @@ void DList::multiplyTwoList(DList* listOne,DList* listTwo, DList* result)
     
 }
 
-DList::DList()
-{
-    NodeCount=0;
-    digitsPerNode = 1;
-    head = NULL;
-    tail = head;
-}
-
-DList::DList(int dPerNode)
-{
-    NodeCount=0;
-    digitsPerNode = dPerNode;
-    setMod();
-    head = NULL;
-    tail = head;
-}
-
 DList::DList(string num,int dPerNode)
+: NodeCount(0), digitsPerNode(dPerNode), mod(10)
 {
-    NodeCount=0;
-    digitsPerNode = dPerNode;
     setMod();
     head = NULL;
     tail = head;
@@ -249,6 +231,4 @@ DList::DList(string num,int dPerNode)
         numberSplit = stoi(num.substr(i,digitsPerNode));
         insertAtTail(numberSplit);
     }
-    
-
 }
