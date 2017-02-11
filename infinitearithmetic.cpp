@@ -79,7 +79,7 @@ int main(int argc, char* argv[])
         if(operation=="+")
         {
             cout << num1 << operation << num2 << "=";
-            result->addTwoList(listOne, listTwo, result);
+            result->addTwoList(listOne, listTwo);
             result->printList();
             listOne->printList();
             listTwo->printList();
@@ -88,7 +88,7 @@ int main(int argc, char* argv[])
         else if(operation=="*")
         {
             cout << num1 << operation << num2 << "=";
-            result->multiplyTwoList(listOne, listTwo, result);
+            result->multiplyTwoList(listOne, listTwo);
             result->printList();
         }
         

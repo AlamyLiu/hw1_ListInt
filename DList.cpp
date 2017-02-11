@@ -119,7 +119,7 @@ void DList::printList()
     }
 }
 
-void DList::addTwoList(DList* listOne,DList* listTwo, DList* result)
+void DList::addTwoList(DList* listOne,DList* listTwo)
 {
     
     //add diffSize ZeroNode
@@ -172,7 +172,7 @@ void DList::addTwoList(DList* listOne,DList* listTwo, DList* result)
                 carry = 0;
             }
             
-            result->insertAtHead(sum);
+            this->insertAtHead(sum);
             if(tempL1!=NULL){
                 tempL1 = tempL1->prev;
             }
@@ -190,7 +190,7 @@ void DList::addTwoList(DList* listOne,DList* listTwo, DList* result)
 //ex L1:1-2-3-4-5-6
 //   L2:2-5-9-3
 //
-void DList::multiplyTwoList(DList* listOne,DList* listTwo, DList* result)
+void DList::multiplyTwoList(DList* listOne,DList* listTwo)
 {
     Node* tempL1 = listOne->tail;
     Node* tempL2 = listTwo->tail;
@@ -211,7 +211,7 @@ void DList::multiplyTwoList(DList* listOne,DList* listTwo, DList* result)
                     carry = sum/10;
                     sum = sum%10;
                 }
-                result->insertAtHead(sum);
+                this->insertAtHead(sum);
         
             
                 tempL1 = tempL1->prev;

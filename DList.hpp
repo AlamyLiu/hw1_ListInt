@@ -46,8 +46,8 @@ public:
     void setMod();
     
     void printList();
-    void addTwoList(DList* listOne,DList* listTwo, DList* result);
-    void multiplyTwoList(DList* listOne,DList* listTwo, DList* result);
+    void addTwoList(DList* listOne,DList* listTwo);
+    void multiplyTwoList(DList* listOne,DList* listTwo);
     
     DList() : DList(1) {};                              // 1 digit per node
     DList(int dPerNode) : DList("0", dPerNode) {};      // default value = "0"
