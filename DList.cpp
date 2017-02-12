@@ -7,6 +7,7 @@
 //
 
 #include <cmath>                        // abs()
+#include <algorithm>
 #include "DList.hpp"
 
 
@@ -16,58 +17,59 @@ extern Debug *dbg;
 
 bool DList::isEmpty()
 {
-    if(head==NULL)
-        return true;
-    else
-        return false;
+    return ((pHead == NULL) ? true : false);
 }
 
-void DList::insertAtHead(int num)
+/* Circular double linked-list */
+void DList::insertAtHead(string num)
 {
-    if (isEmpty()) {
-        head = new Node();
-        head->value = num;
-        tail = head;
-        NodeCount++;
-    }
-    else{
-        Node* temp = new Node();
-        temp->value = num;
-        temp->next = head;
-        head->prev = temp;
-        head = temp;
-        NodeCount++;
-    }
+    insertAtTail( num );
+    pHead = pHead->prev;
 }
-void DList::insertAtTail(int num)
+
+void DList::insertAtTail(string num)
 {
+    Node *pNode = new Node();
+    pNode->value = num;
+
     if (isEmpty()) {
-        head = new Node();
-        head->value = num;
-        tail = head;
-        NodeCount++;
+        pHead = pNode;
+        pNode->prev = pNode;
+        pNode->next = pNode;
+    } else {
+        Node* pTail = pHead->prev;
+
+        pNode->prev = pTail;
+        pNode->next = pHead;
+
+        pTail->next = pNode;
+        pHead->prev = pNode;
     }
-    else{
-        Node* temp = new Node();
-        temp->value = num;
-        tail->next = temp;
-        temp->prev = tail;
-        tail = temp;
-        NodeCount++;
-    }
+
+    NodeCount++;
 }
 
 void DList::deleteAtHead()
 {
-    if(!isEmpty())
-    {
-        Node* temp = head;
-        head = head->next;
-        head->prev = NULL;
-        delete temp;
+    if (isEmpty())
+        return;
+
+    Node* pNode = pHead;
+
+    pHead->prev->next = pHead->next;
+    pHead->next->prev = pHead->prev;
+
+    pHead = pHead->next;
+
+    // Last one ?
+    if (--NodeCount == 0) {
+        pHead = NULL;
     }
+
+    delete pNode;
 }
 
+/*
 void DList::setNodeCount()
 {
     
@@ -81,6 +83,7 @@ void DList::setNodeCount()
     NodeCount++;
     }
 }
+*/
 
 int DList::getNodeCount()
 {
@@ -101,91 +104,97 @@ void DList::setMod()
 {
     mod = 10;
     for (int i=1; i<digitsPerNode; i++) {
-        mod = 10*mod;
+        mod = 10 * mod;
     }
 }
 
 void DList::printList()
 {
-    Node *temp = head;
-    if(!isEmpty()){
-    while (temp->next!=NULL) {
-        cout << temp->value << " ";
-        temp = temp->next;
+    if (isEmpty()) {
+        cout << "(Empty)" << endl;
+        return;
     }
-    cout << temp->value << endl;
+
+    Node* pNode = pHead;
+    while (true) {
+        cout << pNode->value;
+        pNode = pNode->next;
+
+        if (pNode == pHead)
+            break;
     }
-    else{
-        cout << "Empty list" << endl;
-    }
+    cout << endl;
 }
 
-void DList::addTwoList(DList* listOne,DList* listTwo)
+void DList::printList( Debug *dbg, string prompt )
 {
-    
-    //add diffSize ZeroNode
-    if (listOne->getNodeCount() != listTwo->getNodeCount()) {
-        //get difference in nodes
-        int diff = abs(listOne->getNodeCount() - listTwo->getNodeCount());
-        if (listOne->getNodeCount() > listTwo->getNodeCount()) {
-            for (int i=0; i<diff; i++) {
-                listTwo->insertAtHead(0);
-            }
-            
-        }
-        else if (listOne->getNodeCount() < listTwo->getNodeCount())
-        {
-            for (int i=0; i<diff; i++) {
-                listOne->insertAtHead(0);
-            }
-        }
+    *dbg << prompt << ":";
+
+    if (isEmpty()) {
+        *dbg << "(Empty)" << endl;
+        return;
     }
-    
-    Node* tempL1 = listOne->tail;
-    Node* tempL2 = listTwo->tail;
-    
-    //add sameSizeNode
-    int carry = 0;
-    int sum = 0;
-    
-        while(tempL1!=NULL||tempL2!=NULL||carry>0){
-            
-            int num1=0;
-            int num2=0;
-            
-            if (tempL1!=NULL) {
-                num1 = tempL1->value;
-            }
-            if (tempL2!=NULL) {
-                num2 = tempL2->value;
-            }
-            
-            //sum two list plus carryover
-            sum = num1 + num2 + carry;
-            
-            //equal or over 10 carry = 1
-            if(sum>=mod) {
-                carry = sum/10;
-                sum = sum%10;
-            }
-            //if not carry = 0
-            else if(sum<mod){
-                carry = 0;
-            }
-            
-            this->insertAtHead(sum);
-            if(tempL1!=NULL){
-                tempL1 = tempL1->prev;
-            }
-            if(tempL2!=NULL){
-                tempL2 = tempL2->prev;
-            }
-        }
-        if (carry>0) {
-            insertAtHead(carry);
+
+    *dbg << "node=" << NodeCount << "(" << digitsPerNode << "):";
+
+    Node* pNode = pHead;
+    while (true) {
+        *dbg << pNode->value;
+        pNode = pNode->next;
+
+        if (pNode == pHead)
+            break;
+        else
+            *dbg << ",";
+    }
+    *dbg << endl;
+}
+
+void DList::addTwoList(DList* listOne, DList* listTwo)
+{
+    // Point to LSB (list should not be NULL)
+    Node *pNode1 = listOne->pHead->prev;
+    Node *pNode2 = listTwo->pHead->prev;
+
+    int value1, value2;         // Integer of pNode*->value
+    int sum = 0;                // sum = value1 + value2 for each iteration
+    int carry = 0;              // carry of each iteration
+
+
+    do {
+        // fetch value into integer
+        // assume integer could hold it (32-bit)
+        value1 = (pNode1 ? stoi(pNode1->value) : 0);
+        value2 = (pNode2 ? stoi(pNode2->value) : 0);
+
+        sum = value1 + value2 + carry;
+
+        // calculate carry value
+        if (sum >= mod) {
+            // equal or over: carry = 1
+            // '-' operation is faster than "/" and "%"
+            carry = 1;
+            sum = sum - mod;
+        } else {
+            // if not carry = 0
+            carry = 0;
         }
 
-    
+        *dbg << "add: " << value1 << " + " << value2 << " : sum=" << sum << ", carry=" << carry << endl;
+
+        this->insertAtHead( to_string(sum) );
+
+        // Moving to next node, or NULL if already at pHead
+        pNode1 = (pNode1 == listOne->pHead) ? NULL : pNode1->prev;
+        pNode2 = (pNode2 == listTwo->pHead) ? NULL : pNode2->prev;
+    } while (pNode1 || pNode2);
+
+    if (carry) {
+        insertAtHead( to_string(carry) );
+    }
+
+    // Remove leading "0"
+
 }
 
 //ex L1:1-2-3-4-5-6
@@ -193,6 +202,7 @@ void DList::addTwoList(DList* listOne,DList* listTwo)
 //
 void DList::multiplyTwoList(DList* listOne,DList* listTwo)
 {
+#if 0
     Node* tempL1 = listOne->tail;
     Node* tempL2 = listTwo->tail;
     DList* hold = new DList(digitsPerNode);
@@ -207,29 +217,38 @@ void DList::multiplyTwoList(DList* listOne,DList* listTwo)
                 int diff = abs(listOne->getNodeCount() - listTwo->getNodeCount());
                 // L1 * L2 + carry
                 
-                sum = tempL2->value * tempL1->value + carry;
+                sum = stoi(tempL2->value) * stoi(tempL1->value) + carry;
                 if (sum>10) {
                     carry = sum/10;
                     sum = sum%10;
                 }
-                this->insertAtHead(sum);
+                this->insertAtHead( to_string(sum) );
         
             
                 tempL1 = tempL1->prev;
             }
     }
-    
+#endif
 }
 
-DList::DList(string num,int dPerNode)
+DList::DList(string num, int dPerNode)
 : NodeCount(0), digitsPerNode(dPerNode), mod(10)
 {
     setMod();
-    head = NULL;
-    tail = head;
-    int numberSplit;
-    for (int i=0; i<num.length(); i+=digitsPerNode) {
-        numberSplit = stoi(num.substr(i,digitsPerNode));
-        insertAtTail(numberSplit);
+    pHead = NULL;
+
+    // "result" list uses this
+    if (num.empty())
+        return;
+
+    // Reverse the number, so it would be be aligned from LSN
+    std::reverse(num.begin(), num.end());
+    string node_value;
+
+    for (int i=0; i<num.length(); i += digitsPerNode) {
+        string node_value = num.substr(i, digitsPerNode);
+        std::reverse(node_value.begin(), node_value.end());
+
+        insertAtTail( node_value );
     }
 }

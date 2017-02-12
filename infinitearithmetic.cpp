@@ -70,23 +70,27 @@ int main(int argc, char* argv[])
         num2.erase(remove(num2.begin(),num2.end(),'\r'));
         operation = line[operationIndex];
 
-        *dbg << "  num1 = " << num1 << endl;
-        *dbg << "  num2 = " << num2 << endl;
-        *dbg << "  operation = " << operation << endl;
+        *dbg << "num1 = " << num1 << endl;
+        *dbg << "num2 = " << num2 << endl;
+        *dbg << "operation = " << operation << endl;
 
         DList* listOne = new DList(num1,digitsPerNode);
         DList* listTwo = new DList(num2,digitsPerNode);
         DList* result = new DList(digitsPerNode);
-        
-        
+
+        listOne->printList( dbg, "value 1" );
+        listTwo->printList( dbg, "value 2" );
+        result->printList( dbg, "result" );
+
         //addition operation here
         if(operation=="+")
         {
-            cout << num1 << operation << num2 << "=";
             result->addTwoList(listOne, listTwo);
+
+            cout << num1 << operation << num2 << "=";
             result->printList();
-            listOne->printList();
-            listTwo->printList();
+//            listOne->printList();
+//            listTwo->printList();
         }
         //multiplication operation here
         else if(operation=="*")
@@ -95,7 +99,8 @@ int main(int argc, char* argv[])
             result->multiplyTwoList(listOne, listTwo);
             result->printList();
         }
-        
+
+        result->printList( dbg, "result" );
     }
     cout << endl;
 

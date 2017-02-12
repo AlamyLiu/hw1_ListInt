@@ -15,44 +15,47 @@
 #include "DebugW.hpp"                   // Debug
 using namespace std;
 
-
 class DList
 {
 private:
     struct Node
     {
-        int value;
         Node* prev;
         Node* next;
+        string value;
     };
-    Node* head;
-    Node* tail;
-    int digitsPerNode;
-    int NodeCount;
-    int mod;
+    Node* pHead;
+//    Node* pTail;
+
+    int digitsPerNode;  // How many digits in one node
+    int NodeCount;      // How many nodes in the list
+    int mod;            // Multiply base (2 digits per node -> 100)
+
 public:
     
     bool isEmpty();
-    void insertAtHead(int num);
-    void insertAtTail(int num);
+    void insertAtHead(string num);
+    void insertAtTail(string num);
     
     void deleteAtHead();
     
     void setDigitsPerNode(int digit);
     int getDigitsPerNode();
     
-    void setNodeCount();
+//    void setNodeCount();
     int getNodeCount();
     
     void setMod();
     
     void printList();
+    void printList( Debug *dbg, string prompt );
+
     void addTwoList(DList* listOne,DList* listTwo);
     void multiplyTwoList(DList* listOne,DList* listTwo);
     
     DList() : DList(1) {};                              // 1 digit per node
-    DList(int dPerNode) : DList("0", dPerNode) {};      // default value = "0"
-    DList(string num,int dPerNode);                     // default constructur
+    DList(int dPerNode) : DList("", dPerNode) {}        // Specific for result (no list created)
+    DList(string num, int dPerNode);                    // default constructur
     ~DList();
 };
 
