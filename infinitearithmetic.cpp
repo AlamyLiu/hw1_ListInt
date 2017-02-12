@@ -13,6 +13,7 @@
 #include "ArgumentManager.h"
 #include <unistd.h>                     // getopt()
 #include "DebugW.hpp"                   // Debug
+#include "formula.hpp"
 #include "DList.hpp"
 
 
@@ -54,25 +55,18 @@ int main(int argc, char* argv[])
     while (getline(ifs, line)){
         *dbg << "--- Parsing " << line << endl;
 
-        string operation=" ";
-        string num1=" ";
-        string num2=" ";
-        int operationIndex=0;
-        //get string from stringstream
-        //delimiter here + - * / to split string to two part
-        for (int i=0; i<line.length(); i++) {
-            if (ispunct(line[i])) {
-                operationIndex = i;
-            }
-        }
-        num1 = line.substr(0,operationIndex);
-        num2 = line.substr(operationIndex+1);
-        num2.erase(remove(num2.begin(),num2.end(),'\r'));
-        operation = line[operationIndex];
+        Formula f(line);
+	*dbg << "L-Value = " << f.getLValue() << endl;
+	*dbg << "R-Value = " << f.getRValue() << endl;
+	*dbg << "Operator= " << f.getOP() << endl;
+
+	string num1 = f.getLValue();
+	string num2 = f.getRValue();
+	int fOP     = f.getOP();
 
         *dbg << "num1 = " << num1 << endl;
         *dbg << "num2 = " << num2 << endl;
-        *dbg << "operation = " << operation << endl;
+	*dbg << "operation = " << fOP << endl;
 
         DList* listOne = new DList(num1,digitsPerNode);
         DList* listTwo = new DList(num2,digitsPerNode);
@@ -83,24 +77,19 @@ int main(int argc, char* argv[])
         result->printList( dbg, "result" );
 
         //addition operation here
-        if(operation=="+")
+	if (fOP == MATH_ADD)
         {
             result->addTwoList(listOne, listTwo);
-
-            cout << num1 << operation << num2 << "=";
-            result->printList();
-//            listOne->printList();
-//            listTwo->printList();
         }
         //multiplication operation here
-        else if(operation=="*")
+	else if (fOP == MATH_MUL)
         {
-            cout << num1 << operation << num2 << "=";
             result->multiplyTwoList(listOne, listTwo);
-            result->printList();
         }
+        result->printList( dbg, "result" );	// Debug
 
-        result->printList( dbg, "result" );
+        cout << num1 << f.getOPChar() << num2 << "=";
+        result->printList();
     }
     cout << endl;
 

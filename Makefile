@@ -1,10 +1,10 @@
 
 CC = g++
-CFLAGS = -I. -std=c++11 -D_DEBUG
+CFLAGS = -I. -std=c++11 -D_DEBUG -ggdb
 LIBS =
 TARGET = infinitearithmetic
 
-HEADERS = DList.hpp ArgumentManager.h DebugW.hpp
+HEADERS = DList.hpp ArgumentManager.h DebugW.hpp formula.hpp
 SOURCES = DList.cpp infinitearithmetic.cpp DebugW.cpp
 
 OBJS = $(patsubst %.cpp, %.o, $(SOURCES))
