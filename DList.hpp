@@ -36,7 +36,9 @@ public:
     bool isEmpty();
     void insertAtHead(string num);
     void insertAtTail(string num);
-    
+    void insertAtHead(int value);
+    void insertAtTail(int value);
+
     void deleteAtHead();
     
     void setDigitsPerNode(int digit);
@@ -52,6 +54,8 @@ public:
 
     void addTwoList(DList* listOne,DList* listTwo);
     void multiplyTwoList(DList* listOne,DList* listTwo);
+
+    int add(int value, int idx);
     
     DList() : DList(1) {};                              // 1 digit per node
     DList(int dPerNode) : DList("", dPerNode) {}        // Specific for result (no list created)

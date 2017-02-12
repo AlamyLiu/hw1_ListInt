@@ -8,6 +8,8 @@
 
 #include <cmath>                        // abs()
 #include <algorithm>
+#include <sstream>
+#include <iomanip>
 #include "DList.hpp"
 
 
@@ -47,6 +49,19 @@ void DList::insertAtTail(string num)
     }
 
     NodeCount++;
+}
+
+void DList::insertAtHead(int value)
+{
+    insertAtTail( value );
+    pHead = pHead->prev;
+}
+
+void DList::insertAtTail(int value)
+{
+    std::stringstream ss;
+    ss << std::setfill('0') << std::setw(digitsPerNode) << value;
+    insertAtTail( ss.str() );
 }
 
 void DList::deleteAtHead()
@@ -150,9 +165,73 @@ void DList::printList( Debug *dbg, string prompt )
     *dbg << endl;
 }
 
+int DList::add(int value, int idx)
+{
+    Node *pNode;
+    int nIdx;           // Index of Node
+    int value1;         // value from the Node
+    int value2;         // value from the added value
+    int sum, carry;     // variables for '+' operation
+    std::stringstream ss;
+
+    *dbg << "Adding " << value << " to index " << idx;
+    printList(dbg, "");
+
+    // prevent empty list
+    if (isEmpty())
+        insertAtTail( 0 );
+
+    // point to LSN (idx = 0), initiate variables
+    pNode = pHead->prev;
+    nIdx = 0;
+    while (value) {
+
+        if (nIdx == idx) {
+            value1 = stoi(pNode->value);
+            value2 = value % mod;
+
+            sum = value1 + value2;
+
+            // refine sum & carry values
+            if (sum >= mod) {
+                // equal or over: carry = 1
+                // '-' operation is faster than "/" and "%"
+                carry = 1;
+                sum = sum - mod;
+            } else {
+                // if not carry = 0
+                carry = 0;
+            }
+
+            // Restore the new value
+            ss << std::setfill('0') << std::setw(digitsPerNode) << sum;
+            pNode->value = ss.str();
+            ss.str(std::string());      // MUST clear, or it carry on.
+
+            // Re-calculate 'value' and 'idx' for next node
+            value /= mod;
+            value += carry;
+            idx++;
+        } // End of if (pIdx)
+
+        // Need to extend the list ?
+        if (value && (pNode == pHead))
+            insertAtHead( 0 );
+
+        // Advance to next node
+        pNode = pNode->prev;
+        nIdx++;
+    } // End of while (value)
+
+    *dbg << "Added";
+    printList(dbg, "");
+
+    return 0;
+}
+
 void DList::addTwoList(DList* listOne, DList* listTwo)
 {
-    // Point to LSB (list should not be NULL)
+    // Point to LSN (Least significant Node): list should not be NULL
     Node *pNode1 = listOne->pHead->prev;
     Node *pNode2 = listTwo->pHead->prev;
 
@@ -202,33 +281,45 @@ void DList::addTwoList(DList* listOne, DList* listTwo)
 //
 void DList::multiplyTwoList(DList* listOne,DList* listTwo)
 {
-#if 0
-    Node* tempL1 = listOne->tail;
-    Node* tempL2 = listTwo->tail;
-    DList* hold = new DList(digitsPerNode);
-    int sum=0;
-    int carry=0;
-    
-        //List 1 > list 2
-        if (listOne->getNodeCount() > listTwo->getNodeCount()) {
-            //get node difference
-            while (tempL1!=NULL) {
+    // list should not be NULL
+    Node *pNode1, *pNode2;      // Iterator over listOne & listTwo
 
-                int diff = abs(listOne->getNodeCount() - listTwo->getNodeCount());
-                // L1 * L2 + carry
-                
-                sum = stoi(tempL2->value) * stoi(tempL1->value) + carry;
-                if (sum>10) {
-                    carry = sum/10;
-                    sum = sum%10;
-                }
-                this->insertAtHead( to_string(sum) );
-        
-            
-                tempL1 = tempL1->prev;
-            }
-    }
-#endif
+    // Node Index (0 based LSN)
+    int nIdx1, nIdx2, nIdx;
+
+    int value1, value2;         // Integer of pNode*->value
+    int sum = 0;                // sum = value1 * value2 for each iteration
+
+    // Loop over listOne (LSN to MSN)
+    pNode1 = listOne->pHead;
+    nIdx1 = -1;
+    do {
+        pNode1 = pNode1->prev;  // 1st iteration will be LSN
+        nIdx1++;                // 1st nIdx1 == 0
+        value1 = stoi(pNode1->value);
+
+        // Loop over listTwo (LSN to MSN)
+        pNode2 = listTwo->pHead;
+        nIdx2 = -1;
+        do {
+            pNode2 = pNode2->prev;
+            nIdx2++;
+
+//	    *dbg << "node2: index=" << nIdx2 << ", value=" << pNode2->value << endl;
+
+            value2 = stoi(pNode2->value);
+
+            // Now the calculation
+            sum = value1 * value2;
+            nIdx = nIdx1 + nIdx2;
+
+	    *dbg << "Mul: " << value1 << " * " << value2 << endl;
+
+            // Add sum to nIdx node (LSN)
+            this->add(sum, nIdx);
+
+        } while (pNode2 != listTwo->pHead);
+    } while (pNode1 != listOne->pHead);
 }
 
 DList::DList(string num, int dPerNode)
@@ -249,6 +340,6 @@ DList::DList(string num, int dPerNode)
         string node_value = num.substr(i, digitsPerNode);
         std::reverse(node_value.begin(), node_value.end());
 
-        insertAtTail( node_value );
+        insertAtHead( node_value );
     }
 }
