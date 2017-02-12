@@ -261,11 +261,11 @@ void DList::addTwoList(DList* listOne, DList* listTwo)
 
         *dbg << "add: " << value1 << " + " << value2 << " : sum=" << sum << ", carry=" << carry << endl;
 
-        this->insertAtHead( to_string(sum) );
+        this->insertAtHead( sum );
 
         // Moving to next node, or NULL if already at pHead
-        pNode1 = (pNode1 == listOne->pHead) ? NULL : pNode1->prev;
-        pNode2 = (pNode2 == listTwo->pHead) ? NULL : pNode2->prev;
+        pNode1 = pNode1 ? ((pNode1 == listOne->pHead) ? NULL : pNode1->prev) : NULL;
+        pNode2 = pNode2 ? ((pNode2 == listTwo->pHead) ? NULL : pNode2->prev) : NULL;
     } while (pNode1 || pNode2);
 
     if (carry) {
